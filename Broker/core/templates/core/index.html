@@ -26,9 +26,9 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/">Home</a></li>
-                {% if loggedIn %}
-                <li><a href="/content">What we have</a></li>
-                {% endif %}
+                <!--{% if loggedIn %}-->
+                <!--<li><a href="/content">What we have</a></li>-->
+                <!--{% endif %}-->
                 <li><a href="/about">About</a></li>
             </ul>
 
@@ -57,9 +57,21 @@
 
         {% block content %}
 
-        <h1>Personal Secure Wormholes</h1>
-        <img src="{% static 'web/img/wormhole.png' %}" width="40%" alt="Secure Wormhole" />
-
+        <div class="row">
+            <h1>Personal Secure Wormholes</h1>
+        </div>
+        <div class="row">&nbsp;</div>
+        <div class="row">
+            <div class="col-md-5">
+                <img src="{% static 'web/img/wormhole.png' %}" width="100%" alt="Secure Wormhole" />
+            </div>
+            <div class="col-md-7">
+                <span>
+                    <p><b>Welcome to your Broker</b></p>
+                    This is the page where you can find available services for you.
+                </span>
+            </div>
+        </div>
         {% endblock %}
 
     </div>
