@@ -7,4 +7,13 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     # ex: /about/
     url(r'^about/$', views.about, name='about'),
+    # ex: /login/
+    url(r'^login/$', views.login, name='login'),
+    # ex: /logout/
+    url(r'^logout/$', views.logout, name='logout'),
+    # ex: /register/
+    url(r'^register/$', views.register, name='register'),
+    # ex: /manage/
+    url(r'^manage/$', views.accountManage, name='accountManage'),
+
 ]

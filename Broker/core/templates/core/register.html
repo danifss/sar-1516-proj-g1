@@ -1,0 +1,46 @@
+{% extends "core/index.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+        <h2>Register</h2>
+        <br>
+        <div class="row">
+            <div class="col-xs-2"></div>
+            <div class="col-xs-10">
+                {{ error_message }}
+            </div>
+        </div>
+        <form class="form-horizontal" action="/register/" method="post">
+            {% csrf_token %}
+            <fieldset>
+                <div class="row">
+                    <div class="form-control">
+                        <div class="col-xs-2"></div>
+                        <div class="col-xs-8">
+                            {{ form.as_p }}
+                        </div>
+                        <div class="col-xs-2"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-2"></div>
+                    <div class="col-xs-10">
+                        <button type="reset" class="btn btn-default">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btnSubmit" onclick="showSpinner()">Submit</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+
+        <script>
+            function showSpinner(){
+                document.getElementById("loading").style.display="block";
+            }
+        </script>
+        <div id="loading">
+            <img id="loading-image" src="{% static 'web/img/spiral-spinner.gif' %}" alt="Loading..." />
+        </div>
+
+{% endblock %}
