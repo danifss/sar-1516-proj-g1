@@ -5,6 +5,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Personal Secure Wormholes</title>
+    <link rel="icon" href="{% static 'web/img/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'web/css/Site.css' %}">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{% static 'web/css/bootstrap.min.css' %}">
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -26,27 +28,28 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/">Home</a></li>
-                <!--{% if loggedIn %}-->
-                <!--<li><a href="/content">What we have</a></li>-->
-                <!--{% endif %}-->
+                {% if loggedIn %}
+                <li><a href="/brokers">Brokers (PSWs)</a></li>
+                <li><a href="/services">Services</a></li>
+                {% endif %}
                 <li><a href="/about">About</a></li>
             </ul>
 
-            <!--<ul class="nav navbar-nav navbar-right">-->
-                <!--{% if loggedIn %}-->
-                <!--<li><a href="/account/logout">Log out</a></li>-->
-                <!--{% else %}-->
-                <!--<li><a href="/account/register">Register</a></li>-->
-                <!--<li><a href="/account/login">Log in</a></li>-->
-                <!--{% endif %}-->
-            <!--</ul>-->
-            <!--<ul class="nav navbar-nav navbar-right">-->
-                <!--{% if loggedIn %}-->
-                <!--<li><a href="/account/manage" title="Manage your account">Hello {{ firstName }}</a></li>-->
-                <!--{% else %}-->
-                <!--<li><a href="#">Hello {{ firstName }}</a></li>-->
-                <!--{% endif %}-->
-            <!--</ul>-->
+            <ul class="nav navbar-nav navbar-right">
+                {% if loggedIn %}
+                <li><a href="/logout">Log out</a></li>
+                {% else %}
+                <li><a href="/register">Register</a></li>
+                <li><a href="/login">Log in</a></li>
+                {% endif %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if loggedIn %}
+                <li><a href="/manage" title="Manage your account">Hello {{ firstName }}</a></li>
+                {% else %}
+                <li><a href="#">Hello {{ firstName }}</a></li>
+                {% endif %}
+            </ul>
         </div>
     </div>
 </div>
@@ -68,7 +71,7 @@
             <div class="col-md-7">
                 <span>
                     <p><b>Welcome to your Broker</b></p>
-                    This is the page where you can find available services for you.
+                    This is the page where you can find and register available services and PSWs on the wormhole network.
                 </span>
             </div>
         </div>
@@ -76,7 +79,7 @@
 
     </div>
     <footer>
-        <p>&copy; 2016 - Daniel - 51908 //\\ Nuno Marques - 6xxxx //\\ Rui Lebre - 6xxxx</p>
+        <p>&copy; 2016 - Daniel - 51908 //\\ Nuno Marques - 65002 //\\ Rui Lebre - 64090</p>
     </footer>
 </div>
 </body>
