@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..core.models import User, Services, PSW
+from .models import User, Services, PSW
 
 
 class UserSerializer(serializers.ModelSerializer):
