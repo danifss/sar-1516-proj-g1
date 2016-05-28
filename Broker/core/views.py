@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
-from django.views.decorators.csrf import csrf_protect
+# from django.views.decorators.csrf import csrf_protect
 
-from .models import User
-from .forms import registerUserForm, loginForm
+from .models import User, Service, Broker
+from .forms import registerUserForm, loginForm, addBrokerForm
 
 import os
 from CryptoModule import *
@@ -21,11 +21,7 @@ def index(request):
         request.session['firstName'] = firstName
         request.session['loggedIn'] = False
 
-    context = RequestContext(request, {
-        'firstName': firstName,
-        'loggedIn': loggedIn,
-    })
-    return HttpResponse(template.render(context))
+    return HttpResponse(template.render({'firstName': firstName, 'loggedIn': loggedIn, }))
 
 
 def about(request):
@@ -49,14 +45,14 @@ def login(request):
             username = str(request.POST['username'])  # str(form.cleaned_data['username'])
             password = str(request.POST['password'])  # str(form.cleaned_data['password'])
 
-            user = authenticate(username=username, password=password)
+            user, valid = authenticate(username=username, password=password)
             if user is not None:
                 # get user and set session
-                if user:
+                if valid:
                     try:
-                        utilizador = User.objects.get(username=username)
-                        request.session['firstName'] = str(utilizador.firstName)
-                        request.session['username'] = str(utilizador.username)
+                        # utilizador = User.objects.get(username=username)
+                        request.session['firstName'] = str(user.firstName)
+                        request.session['username'] = str(user.username)
                         request.session['loggedIn'] = True
                     except Exception as e:
                         print "Some error acurred getting user to logging in.", e
@@ -70,17 +66,17 @@ def login(request):
                     msgError = 'The password is incorrect!'
             else:
                 # the authentication system was unable to verify the username and password
+                msgError ='The username and password are incorrect.'
                 request.session['firstName'] = "Visitante"
                 request.session['loggedIn'] = False
-                msgError ='The username and password are incorrect.'
     else:
         form = loginForm()
+        request.session['firstName'] = "Visitante"
+        request.session['loggedIn'] = False
 
-    request.session['firstName'] = "Visitante"
-    request.session['loggedIn'] = False
-
-    return render(request, 'core/login.html', {'form': form, 'error_message': msgError, \
-                   'loggedIn' : request.session['loggedIn'], 'firstName': request.session['firstName']})
+    return render(request, 'core/login.html', {'form': form, 'error_message': msgError,
+                                               'loggedIn': request.session['loggedIn'],
+                                               'firstName': request.session['firstName']})
 
 
 def authenticate(username, password):
@@ -88,7 +84,7 @@ def authenticate(username, password):
         # validate if username exists
         user = User.objects.get(username=username)
     except:
-        return None
+        return None, None
 
     # validate password
     crypt = CryptoModule()
@@ -97,9 +93,9 @@ def authenticate(username, password):
     web_pass = crypt.hashingSHA256(password, salt)
     bd_pass = user.password
     if bd_pass != web_pass:
-        return False
+        return user, False
     # all good
-    return True
+    return user, True
 
 
 def logout(request):
@@ -109,7 +105,7 @@ def logout(request):
     return HttpResponse(template.render({'loggedIn': request.session['loggedIn'], 'firstName': request.session['firstName']}))
 
 
-@csrf_protect
+# @csrf_protect
 def register(request):
     if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
         request.session['firstName'] = "Visitante"
@@ -136,20 +132,14 @@ def register(request):
                     msgError = "This username or email is already registered!"
                     form = registerUserForm(request.POST)
                     return render(request, 'core/register.html', {'form': form, 'error_message': msgError,
-                              'loggedIn': request.session['loggedIn'], 'firstName': request.session['firstName']})
+                                  'loggedIn': request.session['loggedIn'], 'firstName': request.session['firstName']})
             except:
                 pass
-
-            # form.save(commit=False)
 
             # apply SHA256 to password
             salt_user = os.urandom(32)
             userSalt = salt_user.encode('base64')
             passwdHash = crypt.hashingSHA256(password, salt_user)
-            # form.password = passwdHash
-
-            # effectively registers new user in db
-            # form.save()
 
             try:
                 new_user = User(username=username, email=email, password=passwdHash, userSalt=userSalt,
@@ -159,6 +149,7 @@ def register(request):
                 return render(request, 'core/register.html', {'form': form, 'error_message': msgError,
                               'loggedIn': request.session['loggedIn'], 'firstName': request.session['firstName']})
 
+            # Save the new user into the database
             new_user.save()
 
             return HttpResponseRedirect('../login/')
@@ -174,19 +165,19 @@ def accountManage(request):
         request.session['firstName'] = "Visitante"
         request.session['loggedIn'] = False
         template = loader.get_template('core/index.html')
-        return HttpResponse(template.render({'loggedIn' : request.session['loggedIn']}))
+        return HttpResponse(template.render({'loggedIn': request.session['loggedIn']}))
 
     try:
         user = User.objects.get(username=request.session['username'])
 
-        context = RequestContext(request, {
+        context = {
             'username': user.username,
             'email': user.email,
             'firstName': user.firstName,
             'lastName': user.lastName,
             'createdOn': user.createdOn,
             'loggedIn': request.session['loggedIn'],
-        })
+        }
 
     except Exception as e:
         print "Error getting User details.", e
@@ -195,3 +186,205 @@ def accountManage(request):
     template = loader.get_template('core/manage.html')
     return HttpResponse(template.render(context))
 
+
+def services(request):
+    if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
+        request.session['firstName'] = "Visitante"
+        request.session['loggedIn'] = False
+        template = loader.get_template('core/index.html')
+        return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
+                                             'firstName': request.session['firstName']}))
+    try:
+        services = Service.objects.all()
+        context = {
+            'services': services,
+            'loggedIn': request.session['loggedIn'],
+            'firstName': request.session['firstName'],
+        }
+    except Exception as e:
+        print "Error getting Content.", e
+        return HttpResponseRedirect('/')
+
+    template = loader.get_template('core/services.html')
+    return HttpResponse(template.render(context))
+
+
+# @csrf_protect
+def brokers(request):
+    if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
+        request.session['firstName'] = "Visitante"
+        request.session['loggedIn'] = False
+        template = loader.get_template('core/index.html')
+        return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
+                                             'firstName': request.session['firstName']}))
+
+    action_link = 'core/action_handler.html'
+    context = {
+        'loggedIn': request.session['loggedIn'],
+        'firstName': request.session['firstName'],
+        'page_title': 'Brokers (PSWs)',
+        'link_back': '/brokers',
+    }
+    try:
+        brokers_list = Broker.objects.all()
+        context.update({
+            'brokers': brokers_list,
+        })
+    except Exception as e:
+        print "Error getting Content.", e
+        return HttpResponseRedirect('/')
+
+    if request.method == 'POST':
+        form = addBrokerForm(request.POST)
+        if form.is_valid():
+            try:
+                user = User.objects.get(username=request.session['username'])
+                name = form.cleaned_data['name']
+                ip = form.cleaned_data['ip']
+                description = form.cleaned_data['description']
+                new_broker = Broker(user=user, name=name, ip=ip, description=description)
+                new_broker.save()
+                infoMessage = "You successfully added a new Broker!"
+                context.update({
+                    'result': True,
+                    'info_message': infoMessage,
+                })
+                # template = loader.get_template('core/broker_add.html')
+                return render(request, action_link, context)
+            except:
+                infoMessage = "Something happened while adding the new Broker!"
+                msgError = "Error adding new Broker."
+                context.update({
+                    'form': form,
+                    'result': False,
+                    'info_message': infoMessage,
+                    'error_message': msgError,
+                    'collapse': 'in',
+                })
+        else:
+            msgError = "Invalid Broker information!"
+            context.update({
+                'brokers': brokers_list,
+                'form': form,
+                'result': False,
+                'error_message': msgError,
+                'loggedIn': request.session['loggedIn'],
+                'firstName': request.session['firstName'],
+                'collapse': 'in',
+            })
+    else:
+        form = addBrokerForm()
+        context.update({
+            'form': form,
+        })
+
+    # template = loader.get_template('core/brokers.html')
+    # return HttpResponse(template.render(context))
+    return render(request, 'core/brokers.html', context)
+
+
+def broker_del(request, pk=None):
+    if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
+        request.session['firstName'] = "Visitante"
+        request.session['loggedIn'] = False
+        template = loader.get_template('core/index.html')
+        return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
+                                             'firstName': request.session['firstName']}))
+
+    action_link = 'core/action_handler.html'
+    context = {
+        'loggedIn': request.session['loggedIn'],
+        'firstName': request.session['firstName'],
+        'page_title': 'Brokers (PSWs)',
+        'link_back': '/brokers',
+    }
+    if pk is not None:
+        try:
+            id = int(pk)
+            broker = Broker.objects.get(brokerID=id)
+            broker.delete()
+            infoMessage = "You successfully deleted the Broker!"
+            context.update({
+                'result': True,
+                'info_message': infoMessage,
+            })
+        except:
+            infoMessage = "Something happened while deleting the Broker!"
+            msgError = "Invalid Broker!"
+            context.update({
+                'result': False,
+                'info_message': infoMessage,
+                'error_message': msgError,
+            })
+    else:
+        return HttpResponseRedirect('/')
+
+    template = loader.get_template(action_link)
+    return HttpResponse(template.render(context))
+
+
+def service_del(request, pk=None):
+    if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
+        request.session['firstName'] = "Visitante"
+        request.session['loggedIn'] = False
+        template = loader.get_template('core/index.html')
+        return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
+                                             'firstName': request.session['firstName']}))
+
+    action_link = 'core/action_handler.html'
+    context = {
+        'loggedIn': request.session['loggedIn'],
+        'firstName': request.session['firstName'],
+        'page_title': 'Services',
+        'link_back': '/services',
+    }
+    if pk is not None:
+        try:
+            id = int(pk)
+            service = Service.objects.get(serviceID=id)
+            service.delete()
+            infoMessage = "You successfully deleted the Service!"
+            context.update({
+                'result': True,
+                'info_message': infoMessage,
+            })
+        except:
+            infoMessage = "Something happened while deleting the Service!"
+            msgError = "Invalid Service!"
+            context.update({
+                'result': False,
+                'info_message': infoMessage,
+                'error_message': msgError,
+            })
+    else:
+        return HttpResponseRedirect('/')
+
+    template = loader.get_template(action_link)
+    return HttpResponse(template.render(context))
+
+
+def services_update(request):
+    if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
+        request.session['firstName'] = "Visitante"
+        request.session['loggedIn'] = False
+        template = loader.get_template('core/index.html')
+        return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
+                                             'firstName': request.session['firstName']}))
+
+    action_link = 'core/services.html'
+    context = {
+        'loggedIn': request.session['loggedIn'],
+        'firstName': request.session['firstName'],
+    }
+    try:
+        #TODO connect to all existent brokers to ask for their services and then save them
+        services = Service.objects.all()
+        context.update({
+            'services': services,
+        })
+    except Exception as e:
+        print ("Error getting Content.")
+        return HttpResponseRedirect('/')
+
+    template = loader.get_template(action_link)
+    return HttpResponse(template.render(context))
