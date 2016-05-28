@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..core.models import User, Services, PSW
+from core.models import User, Service, Broker
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -7,11 +7,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
 
 
-class ServicesSerializer(serializers.ModelSerializer):
+class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Services
+        model = Service
 
 
-class PSWSerializer(serializers.ModelSerializer):
+class BrokerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PSW
+        model = Broker

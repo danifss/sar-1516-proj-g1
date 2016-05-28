@@ -15,5 +15,10 @@ urlpatterns = [
     url(r'^register/$', views.register, name='register'),
     # ex: /manage/
     url(r'^manage/$', views.accountManage, name='accountManage'),
-
+    # ex: /services/
+    url(r'^services/$', views.services, name='services'),
+    # ex: /brokers/
+    url(r'^brokers/$', views.brokers, name='brokers'),
+    # ex: /brokers/del/1
+    url(r'^brokers/del/(?P<pk>[0-9]+)/$', views.broker_del, name='deleteBroker'),
 ]
