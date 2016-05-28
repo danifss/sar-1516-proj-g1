@@ -218,11 +218,18 @@ def brokers(request):
         return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
                                              'firstName': request.session['firstName']}))
 
+    action_link = 'core/action_handler.html'
+    context = {
+        'loggedIn': request.session['loggedIn'],
+        'firstName': request.session['firstName'],
+        'page_title': 'Brokers (PSWs)',
+        'link_back': '/brokers',
+    }
     try:
         brokers_list = Broker.objects.all()
-        context = {
+        context.update({
             'brokers': brokers_list,
-        }
+        })
     except Exception as e:
         print "Error getting Content.", e
         return HttpResponseRedirect('/')
@@ -237,27 +244,26 @@ def brokers(request):
                 description = form.cleaned_data['description']
                 new_broker = Broker(user=user, name=name, ip=ip, description=description)
                 new_broker.save()
-                context = {
+                infoMessage = "You successfully added a new Broker!"
+                context.update({
                     'result': True,
-                    'loggedIn': request.session['loggedIn'],
-                    'firstName': request.session['firstName'],
-                }
+                    'info_message': infoMessage,
+                })
                 # template = loader.get_template('core/broker_add.html')
-                return render(request, 'core/broker_add.html', context)
+                return render(request, action_link, context)
             except:
+                infoMessage = "Something happened while adding the new Broker!"
                 msgError = "Error adding new Broker."
-                context = {
-                    'brokers': brokers_list,
+                context.update({
                     'form': form,
                     'result': False,
+                    'info_message': infoMessage,
                     'error_message': msgError,
-                    'loggedIn': request.session['loggedIn'],
-                    'firstName': request.session['firstName'],
                     'collapse': 'in',
-                }
+                })
         else:
             msgError = "Invalid Broker information!"
-            context = {
+            context.update({
                 'brokers': brokers_list,
                 'form': form,
                 'result': False,
@@ -265,13 +271,11 @@ def brokers(request):
                 'loggedIn': request.session['loggedIn'],
                 'firstName': request.session['firstName'],
                 'collapse': 'in',
-            }
+            })
     else:
         form = addBrokerForm()
         context.update({
             'form': form,
-            'loggedIn': request.session['loggedIn'],
-            'firstName': request.session['firstName'],
         })
 
     # template = loader.get_template('core/brokers.html')
@@ -287,26 +291,100 @@ def broker_del(request, pk=None):
         return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
                                              'firstName': request.session['firstName']}))
 
+    action_link = 'core/action_handler.html'
+    context = {
+        'loggedIn': request.session['loggedIn'],
+        'firstName': request.session['firstName'],
+        'page_title': 'Brokers (PSWs)',
+        'link_back': '/brokers',
+    }
     if pk is not None:
-        context = {
-            'loggedIn': request.session['loggedIn'],
-            'firstName': request.session['firstName'],
-        }
         try:
             id = int(pk)
             broker = Broker.objects.get(brokerID=id)
             broker.delete()
+            infoMessage = "You successfully deleted the Broker!"
             context.update({
                 'result': True,
+                'info_message': infoMessage,
             })
         except:
+            infoMessage = "Something happened while deleting the Broker!"
             msgError = "Invalid Broker!"
             context.update({
                 'result': False,
+                'info_message': infoMessage,
                 'error_message': msgError,
             })
     else:
         return HttpResponseRedirect('/')
 
-    template = loader.get_template('core/broker_del.html')
+    template = loader.get_template(action_link)
+    return HttpResponse(template.render(context))
+
+
+def service_del(request, pk=None):
+    if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
+        request.session['firstName'] = "Visitante"
+        request.session['loggedIn'] = False
+        template = loader.get_template('core/index.html')
+        return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
+                                             'firstName': request.session['firstName']}))
+
+    action_link = 'core/action_handler.html'
+    context = {
+        'loggedIn': request.session['loggedIn'],
+        'firstName': request.session['firstName'],
+        'page_title': 'Services',
+        'link_back': '/services',
+    }
+    if pk is not None:
+        try:
+            id = int(pk)
+            service = Service.objects.get(serviceID=id)
+            service.delete()
+            infoMessage = "You successfully deleted the Service!"
+            context.update({
+                'result': True,
+                'info_message': infoMessage,
+            })
+        except:
+            infoMessage = "Something happened while deleting the Service!"
+            msgError = "Invalid Service!"
+            context.update({
+                'result': False,
+                'info_message': infoMessage,
+                'error_message': msgError,
+            })
+    else:
+        return HttpResponseRedirect('/')
+
+    template = loader.get_template(action_link)
+    return HttpResponse(template.render(context))
+
+
+def services_update(request):
+    if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
+        request.session['firstName'] = "Visitante"
+        request.session['loggedIn'] = False
+        template = loader.get_template('core/index.html')
+        return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
+                                             'firstName': request.session['firstName']}))
+
+    action_link = 'core/services.html'
+    context = {
+        'loggedIn': request.session['loggedIn'],
+        'firstName': request.session['firstName'],
+    }
+    try:
+        #TODO connect to all existent brokers to ask for their services and then save them
+        services = Service.objects.all()
+        context.update({
+            'services': services,
+        })
+    except Exception as e:
+        print ("Error getting Content.")
+        return HttpResponseRedirect('/')
+
+    template = loader.get_template(action_link)
     return HttpResponse(template.render(context))
