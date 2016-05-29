@@ -1,6 +1,6 @@
 from rest_framework import generics
 from core.models import User, Service, Broker
-from serializers import UserSerializer, ServiceSerializer, BrokerSerializer
+from core.serializers import UserSerializer, ServiceSerializer, BrokerSerializer
 from httplib import HTTPResponse
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,15 +8,14 @@ from rest_framework import status
 
 # Returns a list of available services in the networks
 class ServicesList(generics.ListCreateAPIView):
-
-    """<b>User Login</b>"""
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    """<b>List Services</b>"""
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
     allowed_methods = ['get']
 
     def get(self, request):
         """
-        Gets user id if credentials are correct
+        Gets a list of services existing in the network
 
 
 
@@ -32,17 +31,19 @@ class ServicesList(generics.ListCreateAPIView):
 
         - 400 BAD REQUEST
         #         """
-        if 'password' in request.GET and 'email' in request.GET:
-            try:
-                user = User.objects.get(email__iexact=request.GET.get('email'))
-                if user.check_password(request.GET.get('password')):
-                    return Response(status=status.HTTP_200_OK, data={'id': user.id, 'first_name': user.first_name,
-                                                                     'last_name': user.last_name})
-                else:
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
-            except:
-                pass
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            services = Service.objects.get()
+            resp = []
+            for s in services:
+                resp += [s.name]
+            self.queryset = resp
+            # return Response(status=status.HTTP_200_OK, data={'id': services.id, 'first_name': services.first_name,
+            #                                                      'last_name': services.last_name})
+            # return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
+            self.queryset = []
+
+        return self.list(request)
 
 
 # class UserLogin(generics.ListCreateAPIView):
