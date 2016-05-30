@@ -4,58 +4,19 @@ from core.serializers import UserSerializer, ServiceSerializer, BrokerSerializer
 from httplib import HTTPResponse
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 
 
 # Returns a list of available services in the networks
-class ServicesList(generics.ListCreateAPIView):
-    """<b>List Services</b>"""
-    queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
-    allowed_methods = ['get']
-
-    def get(self, request):
-        """
-        Gets a list of services existing in the network
-
-
-
-        <b>Details</b>
-
-        METHODS : GET
-
-
-
-        <b>RETURNS:</b>
-
-        - 200 OK.
-
-        - 400 BAD REQUEST
-        #         """
-        try:
-            services = Service.objects.get()
-            resp = []
-            for s in services:
-                resp += [s.name]
-            self.queryset = resp
-            # return Response(status=status.HTTP_200_OK, data={'id': services.id, 'first_name': services.first_name,
-            #                                                      'last_name': services.last_name})
-            # return Response(status=status.HTTP_400_BAD_REQUEST)
-        except:
-            self.queryset = []
-
-        return self.list(request)
-
-
-# class UserLogin(generics.ListCreateAPIView):
-#     """<b>User Login</b>"""
-#     queryset = CustomUser.objects.all()
-#     serializer_class = CustomUserSerializer
+# class ServicesList(APIView):
+#     """<b>List Services</b>"""
+#     queryset = Service.objects.all()
+#     serializer_class = ServiceSerializer
 #     allowed_methods = ['get']
 #
 #     def get(self, request):
 #         """
-#         Gets user id if credentials are correct
-#
+#         Gets a list of services existing in the network
 #
 #
 #
@@ -70,21 +31,18 @@ class ServicesList(generics.ListCreateAPIView):
 #         - 200 OK.
 #
 #         - 400 BAD REQUEST
+#         #         """
 #
-#         email -- registration email
-#         password -- registration password
-#         ---
-#         omit_parameters:
-#         - form
-#         """
-#         if 'password' in request.GET and 'email' in request.GET:
-#             try:
-#                 user = CustomUser.objects.get(email__iexact = request.GET.get('email'))
-#                 if user.check_password(request.GET.get('password')):
-#                     return Response(status=status.HTTP_200_OK, data={'id': user.id, 'first_name': user.first_name,
-#                                                                      'last_name': user.last_name})
-#                 else:
-#                     return Response(status=status.HTTP_400_BAD_REQUEST)
-#             except:
-#                 pass
-#         return Response(status=status.HTTP_400_BAD_REQUEST)
+#         # X-CSRFToken: UHO29TxPYCyqUcKqcNQeK5kF8BG0p7lX
+#         print(request.META['CSRF_COOKIE'])
+#
+#         try:
+#             services = Service.objects.all()
+#             resp = []
+#             for s in services:
+#                 resp += [s]
+#             self.queryset = resp
+#         except:
+#             self.queryset = []
+#
+#         return Response(status=status.HTTP_200_OK, data={'data': str(self.queryset)})
