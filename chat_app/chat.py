@@ -27,7 +27,6 @@ class receiver (threading.Thread):
         self.stop()
 
     def stop(self):
-        sys.exit()
         self.end = True
         self.s.close()
         sys.exit()
@@ -50,10 +49,10 @@ class sender (threading.Thread):
         self.stop()
 
     def stop(self):
-        sys.exit()
         self.running = False
         #socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.hostname, self.port))
         self.s.close()
+        sys.exit()
 
 TCP_IP = '127.0.0.1'
 BUFFER_SIZE = 20  # Normally 1024, but we want fast response
