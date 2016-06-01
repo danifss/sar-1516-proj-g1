@@ -5,7 +5,8 @@ from httplib import HTTPResponse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-
+from rest_framework.decorators import api_view
+import requests
 
 # Returns a list of available services in the networks
 # class ServicesList(APIView):
@@ -46,3 +47,14 @@ from rest_framework.views import APIView
 #             self.queryset = []
 #
 #         return Response(status=status.HTTP_200_OK, data={'data': str(self.queryset)})
+
+@api_view(['GET'])
+def connect(request, path=None):
+    print(request.data)
+
+
+    r = requests.get(path)
+    requests.post(path, data=request.data)
+    data = (r.text)
+
+    return Response(status=status.HTTP_200_OK, data=data)
