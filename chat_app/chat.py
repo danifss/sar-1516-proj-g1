@@ -1,8 +1,10 @@
 import socket
 import threading
 from time import sleep
-import sys, traceback
 import public_ip
+import json
+import urllib2
+import os
 
 
 class receiver (threading.Thread):
@@ -32,9 +34,10 @@ class receiver (threading.Thread):
         return str(self.s.getsockname()[1])
 
     def stop(self):
+        #self.s.close()
         self.end = True
-        self.s.close()
-        sys.exit()
+        delete_service(public_ip.get_lan_ip(), get_port())
+        os._exit(0)
         
 
 class sender (threading.Thread):
@@ -58,25 +61,41 @@ class sender (threading.Thread):
 
     def stop(self):
         self.running = False
-        #socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.hostname, self.port))
-        self.s.close()
-        sys.exit()
+        #self.s.close()
+        os._exit(0)
 
-TCP_IP = '127.0.0.1'
-BUFFER_SIZE = 20  # Normally 1024, but we want fast response
+
+def register_service(ip, port):
+    data = {
+        "ip" : str(ip),
+        "name" : "chat_app",
+        "description" : "Chat end-to-end app using sockets without encryption",
+        "port" : str(port)
+    }
+
+    try:
+        req = urllib2.Request('http://localhost:8000/api/services/')
+        req.add_header('Content-Type', 'application/json')
+        response = urllib2.urlopen(req, json.dumps(data))
+    except:
+        print "Error while registering service"
+        os._exit(1)  
+
+
+def delete_service(ip, port):
+    opener = urllib2.build_opener(urllib2.HTTPHandler)
+    request = urllib2.Request('http://localhost:8000/api/services/del/' + ip + "/" + port)
+    request.get_method = lambda: 'DELETE'
+    url = opener.open(request)
+
 
 try:
+    BUFFER_SIZE = 20
     thread1 = receiver(BUFFER_SIZE)
     thread1.start()
     sleep(0.1)   
 
-    json = {
-        "ip" : public_ip.get_lan_ip(),
-        "name" : "chat_app",
-        "port" : thread1.get_port()
-    }
-
-    print json
+    register_service(public_ip.get_lan_ip(), thread1.get_port())
 
     ip = raw_input("Connect to\nIP: ")
     port = int(raw_input("Port: "))
@@ -84,7 +103,9 @@ try:
     thread2.start()
     
 except KeyboardInterrupt:
-    print "Stoping"
+    print "\nStoping"
+    delete_service(public_ip.get_lan_ip(), thread1.get_port())
     thread1.stop()
     thread2.stop()
-    sys.exit(0)
+    os._exit(0)
+
