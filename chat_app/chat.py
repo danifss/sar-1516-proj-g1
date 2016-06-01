@@ -2,6 +2,8 @@ import socket
 import threading
 from time import sleep
 import sys, traceback
+import public_ip
+
 
 class receiver (threading.Thread):
     def __init__(self, BUFFER_SIZE):
@@ -26,6 +28,9 @@ class receiver (threading.Thread):
                 print "> ", data
         self.stop()
 
+    def get_port(self):
+        return str(self.s.getsockname()[1])
+
     def stop(self):
         self.end = True
         self.s.close()
@@ -48,6 +53,9 @@ class sender (threading.Thread):
                 break
         self.stop()
 
+    def get_port(self):
+        return str(self.s.getsockname()[1])
+
     def stop(self):
         self.running = False
         #socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.hostname, self.port))
@@ -61,6 +69,14 @@ try:
     thread1 = receiver(BUFFER_SIZE)
     thread1.start()
     sleep(0.1)   
+
+    json = {
+        "ip" : public_ip.get_lan_ip(),
+        "name" : "chat_app",
+        "port" : thread1.get_port()
+    }
+
+    print json
 
     ip = raw_input("Connect to\nIP: ")
     port = int(raw_input("Port: "))
