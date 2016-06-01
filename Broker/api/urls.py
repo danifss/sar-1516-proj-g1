@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^brokers/$', ListAPIView.as_view(queryset=Broker.objects.all(), serializer_class=BrokerSerializer),
         name='broker_list'),
 
+    url(r'^proxy/(?P<path>.*)$', views.connect),
 ]
