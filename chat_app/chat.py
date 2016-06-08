@@ -5,6 +5,7 @@ import public_ip
 import json
 import urllib2
 import os
+import random
 
 
 class receiver (threading.Thread):
@@ -68,7 +69,7 @@ class sender (threading.Thread):
 def register_service(ip, port):
     data = {
         "ip" : str(ip),
-        "name" : "chat_app",
+        "name" : "chat_app" + str(random.randint(100000,999999)),
         "description" : "Chat end-to-end app using sockets without encryption",
         "port" : str(port)
     }
