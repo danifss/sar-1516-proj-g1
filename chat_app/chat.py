@@ -1,10 +1,8 @@
-import urllib2
 import socket
 import threading
 import os
 from time import sleep
 import public_ip
-import json
 import os
 import requests
 
@@ -29,11 +27,7 @@ class sender (threading.Thread):
 
     def stop(self):
         URL_delete ='http://localhost:8000/api/services/del/' + str(public_ip.get_lan_ip()) + "/" + str(port)
-        opener = urllib2.build_opener(urllib2.HTTPHandler)
-        request = urllib2.Request('http://localhost:8000/api/services/del/' + str(public_ip.get_lan_ip()) + "/" + str(port))
-        request.get_method = lambda: 'DELETE'
         r = requests.delete(URL_delete)
-        #url = opener.open(request)
         os._exit(0)
 
 
@@ -59,21 +53,13 @@ class receiver (threading.Thread):
             else:
                 print "> ", data
         self.stop()
-        #os._exit(0)
 
     def get_port(self):
         return str(self.s.getsockname()[1])
 
     def stop(self):
-        #self.s.close()
         URL_delete ='http://localhost:8000/api/services/del/' + str(public_ip.get_lan_ip()) + "/" + str(port)
-        opener = urllib2.build_opener(urllib2.HTTPHandler)
-        request = urllib2.Request('http://localhost:8000/api/services/del/' + str(public_ip.get_lan_ip()) + "/" + str(port))
-        request.get_method = lambda: 'DELETE'
-
         r = requests.delete(URL_delete)
-        #url = opener.open(request)
-
         os._exit(0)
 
 
@@ -86,19 +72,15 @@ def register_service(ip, port):
     }
 
     try:
-        req = urllib2.Request('http://localhost:8000/api/services/')
-        req.add_header('Content-Type', 'application/json')
-        response = urllib2.urlopen(req, json.dumps(data))
+        r = requests.post('http://localhost:8000/api/services/', data=data)
     except:
         print "Error while registering service"
         os._exit(1)  
 
 
 def delete_service(ip, port):
-    opener = urllib2.build_opener(urllib2.HTTPHandler)
-    request = urllib2.Request('http://localhost:8000/api/services/del/' + ip + "/" + port)
-    request.get_method = lambda: 'DELETE'
-    url = opener.open(request)
+    URL_delete ='http://localhost:8000/api/services/del/' + str(ip) + "/" + str(port)
+    r = requests.delete(URL_delete)
 
 
 try:
@@ -120,4 +102,3 @@ except KeyboardInterrupt:
     thread_receiver.stop()
     thread_sender.stop()
     os._exit(0)
-
