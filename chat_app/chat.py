@@ -32,7 +32,7 @@ class sender (threading.Thread):
         opener = urllib2.build_opener(urllib2.HTTPHandler)
         request = urllib2.Request('http://localhost:8000/api/services/del/' + str(public_ip.get_lan_ip()) + "/" + str(port))
         request.get_method = lambda: 'DELETE'
-        r = requests.delete(URL_delete, data)
+        r = requests.delete(URL_delete)
         #url = opener.open(request)
         os._exit(0)
 
@@ -71,7 +71,7 @@ class receiver (threading.Thread):
         request = urllib2.Request('http://localhost:8000/api/services/del/' + str(public_ip.get_lan_ip()) + "/" + str(port))
         request.get_method = lambda: 'DELETE'
 
-        r = requests.delete(URL_delete, data)
+        r = requests.delete(URL_delete)
         #url = opener.open(request)
 
         os._exit(0)
