@@ -26,7 +26,7 @@ class sender (threading.Thread):
         return str(self.s.getsockname()[1])
 
     def stop(self):
-        URL_delete ='http://localhost:8000/api/services/del/' + str(public_ip.get_lan_ip()) + "/" + str(port)
+        URL_delete ='http://localhost:8000/api/services/del/' + str(public_ip.get_lan_ip()) + "/" + str(self.s.getsockname()[1])
         r = requests.delete(URL_delete)
         os._exit(0)
 
@@ -58,7 +58,7 @@ class receiver (threading.Thread):
         return str(self.s.getsockname()[1])
 
     def stop(self):
-        URL_delete ='http://localhost:8000/api/services/del/' + str(public_ip.get_lan_ip()) + "/" + str(port)
+        URL_delete ='http://localhost:8000/api/services/del/' + str(public_ip.get_lan_ip()) + "/" + str(self.s.getsockname()[1])
         r = requests.delete(URL_delete)
         os._exit(0)
 
