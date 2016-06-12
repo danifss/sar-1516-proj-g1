@@ -69,7 +69,7 @@ class sender (threading.Thread):
 def register_service(ip, port):
     data = {
         "ip" : str(ip),
-        "name" : "chat_app" + str(random.randint(100000,999999)),
+        "name" : "chat_app_" + str(port),
         "description" : "Chat end-to-end app using sockets without encryption",
         "port" : str(port)
     }
