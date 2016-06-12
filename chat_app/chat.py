@@ -96,6 +96,7 @@ try:
     thread_sender = sender(ip, port)
     thread_sender.start()
     
+    while True: sleep(100)
 except KeyboardInterrupt:
     print "\nStoping"
     delete_service(public_ip.get_lan_ip(), thread_receiver.get_port())
