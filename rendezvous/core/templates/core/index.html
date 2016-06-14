@@ -1,0 +1,86 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Personal Secure Wormholes</title>
+    <link rel="icon" href="{% static 'web/img/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'web/css/Site.css' %}">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'web/css/bootstrap.min.css' %}">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="{% static 'web/js/jquery.min.js' %}"></script>
+    <!-- Bootstrap JS -->
+    <script src="{% static 'web/js/bootstrap.min.js' %}"></script>
+</head>
+<body>
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">PSW</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                {% if loggedIn %}
+                <li><a href="/brokers">Brokers (PSWs)</a></li>
+                <li><a href="/services">Services</a></li>
+                {% endif %}
+                <li><a href="/about">About</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                {% if loggedIn %}
+                <li><a href="/logout">Log out</a></li>
+                {% else %}
+{#                <li><a href="/register">Register</a></li>#}
+                <li><a href="/login">Log in</a></li>
+                {% endif %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if loggedIn %}
+                <li><a href="/manage" title="Manage your account">Hello {{ firstName }}</a></li>
+                {% else %}
+                <li><a href="#">Hello {{ firstName }}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container body-content">
+
+    <div class="jumbotron">
+
+        {% block content %}
+
+        <div class="row">
+            <h1>Personal Secure Wormholes</h1>
+        </div>
+        <div class="row">&nbsp;</div>
+        <div class="row">
+            <div class="col-md-5">
+                <img src="{% static 'web/img/wormhole.png' %}" width="100%" alt="Secure Wormhole" />
+            </div>
+            <div class="col-md-7">
+                <span>
+                    <p><b>Welcome to your Broker</b></p>
+                    This is the page where you can find and register available services and PSWs on the wormhole network.
+                </span>
+            </div>
+        </div>
+        {% endblock %}
+
+    </div>
+    <footer>
+        <p>&copy; 2016 - Daniel - 51908 //\\ Nuno Marques - 65002 //\\ Rui Lebre - 64090</p>
+    </footer>
+</div>
+</body>
+</html>
