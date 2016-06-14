@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # IPTABLES
-sudo -s
 iptables -P INPUT ACCEPT
 iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 iptables -F
 iptables -N KNOCKING
 iptables -N GATE1
+iptables -N PASSED
 
+iptables -A INPUT -p tcp --dport 8000 -j ACCEPT
 iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -i lo -j ACCEPT
-iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 iptables -A INPUT -j KNOCKING
 
 # the recent module (called with -m recent), flags the requesting IP address with the name AUTH1
@@ -41,3 +41,6 @@ iptables -A KNOCKING -m recent --rcheck --seconds 30 --name AUTH3 -j PASSED
 iptables -A KNOCKING -m recent --rcheck --seconds 10 --name AUTH2 -j GATE1
 iptables -A KNOCKING -m recent --rcheck --seconds 10 --name AUTH1 -j GATE1
 iptables -A KNOCKING -j GATE1
+
+#iptables -I PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-port 8000
+#iptables -t nat -A POSTROUTING -j MASQUERADE
