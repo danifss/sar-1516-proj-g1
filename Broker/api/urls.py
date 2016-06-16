@@ -1,6 +1,6 @@
 from django.conf.urls import include, url
 from api import views
-from rest_framework.generics import ListCreateAPIView, ListAPIView, DestroyAPIView
+from rest_framework.generics import ListCreateAPIView, ListAPIView
 from core.models import Service, Broker
 from serializers import ServiceSerializer, BrokerSerializer
 
@@ -13,8 +13,9 @@ urlpatterns = [
     # url(r'^services/$', views.getservices),
 
     # ex: api/services/
-    url(r'^services/$', ListCreateAPIView.as_view(queryset=Service.objects.all(), serializer_class=ServiceSerializer),
-        name='services-list'),
+    # url(r'^services/$', ListCreateAPIView.as_view(queryset=Service.objects.all(), serializer_class=ServiceSerializer),
+    #     name='services-list'),
+    url(r'^services/$', views.listCreateService.as_view(), name='services-list-create'),
 
     # ex: api/services/1/
     # url(r'^services/del/(?P<pk>[0-9]+)/$', DestroyAPIView.as_view(queryset=Service.objects.all(),
@@ -29,5 +30,5 @@ urlpatterns = [
     url(r'^brokers/$', ListAPIView.as_view(queryset=Broker.objects.all(), serializer_class=BrokerSerializer),
         name='broker_list'),
 
-    url(r'^proxy/(?P<path>.*)$', views.connect),
+    # url(r'^proxy/(?P<path>.*)$', views.connect),
 ]
