@@ -1,7 +1,7 @@
-from rest_framework import generics
-from core.models import User, Service, Broker
-from serializers import UserSerializer, ServiceSerializer, BrokerSerializer
-from httplib import HTTPResponse
+# from rest_framework import generics
+# from core.models import User, Service, Broker
+# from serializers import UserSerializer, ServiceSerializer, BrokerSerializer
+# from httplib import HTTPResponse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -54,21 +54,10 @@ import json
 
 host = 'http://localhost:9000/'
 
-# @api_view(['GET'])
-# def connect(request, path=None):
-#     print(request.data)
-#
-#
-#     r = requests.get(path)
-#     requests.post(path, data=request.data)
-#     data = (r.text)
-#
-#     return Response(status=status.HTTP_200_OK, data=data)
-
 
 class listCreateService(APIView):
-    queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
+    # queryset = Service.objects.all()
+    # serializer_class = ServiceSerializer
     allowed_methods = ['get', 'post']
 
     def get(self, request):
@@ -163,8 +152,8 @@ class listCreateService(APIView):
 
 
 class delServiceByIpPort(APIView):
-    queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
+    # queryset = Service.objects.all()
+    # serializer_class = ServiceSerializer
     allowed_methods = ['delete']
 
     def delete(self, request, ip=None, port=None):  # ip1=None, ip2=None, ip3=None, ip4=None, port=None):
@@ -203,8 +192,8 @@ class delServiceByIpPort(APIView):
 
 
 class delServiceById(APIView):
-    queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
+    # queryset = Service.objects.all()
+    # serializer_class = ServiceSerializer
     allowed_methods = ['delete']
 
     def delete(self, request, pk=None):
