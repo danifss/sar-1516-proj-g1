@@ -52,7 +52,7 @@ import json
 #
 #         return Response(status=status.HTTP_200_OK, data={'data': str(self.queryset)})
 
-host = 'http://localhost:9000/'
+host = 'http://10.1.1.2:9000/'
 
 
 class listCreateService(APIView):
