@@ -1,0 +1,18 @@
+{% extends "core/index.html" %}
+
+{% block content %}
+
+    <h1>{{ page_title }}</h1>
+    <br>
+
+    {% if result %}
+    <div class="alert alert-dismissible alert-success">
+        <strong>Well done!</strong> {{ info_message }} {{ error_message }} <a href="{{ link_back }}" class="alert-link">Go back</a>.
+    </div>
+    {% else %}
+    <div class="alert alert-dismissible alert-danger">
+        <strong>Oops!</strong> {{ info_message }} {{ error_message }} <a href="{{ link_back }}" class="alert-link">Go back</a>.
+    </div>
+    {% endif %}
+
+{% endblock %}
