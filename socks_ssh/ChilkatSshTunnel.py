@@ -9,27 +9,27 @@ if (success != True):
     print(chilkatGlob.lastErrorText())
     sys.exit()
 
-#  This example requires Chilkat version 9.5.0.50 or greater.
+# This example requires Chilkat version 9.5.0.50 or greater.
 tunnel = chilkat.CkSshTunnel()
 
 sshHostname = "192.168.56.101"
 sshPort = 22
 
 #  Connect to an SSH server and establish the SSH tunnel:
-success = tunnel.Connect(sshHostname,sshPort)
+success = tunnel.Connect(sshHostname, sshPort)
 if (success != True):
     print(tunnel.lastErrorText())
     sys.exit()
 
-#  Authenticate with the SSH server via a login/password
+# Authenticate with the SSH server via a login/password
 #  or with a public key.
 #  This example demonstrates SSH password authentication.
-success = tunnel.AuthenticatePw("nuno","nuno")
+success = tunnel.AuthenticatePw("nuno", "nuno")
 if (success != True):
     print(tunnel.lastErrorText())
     sys.exit()
 
-#  Indicate that the background SSH tunnel thread will behave as a SOCKS proxy server
+# Indicate that the background SSH tunnel thread will behave as a SOCKS proxy server
 #  with dynamic port forwarding:
 tunnel.put_DynamicPortForwarding(True)
 
@@ -49,7 +49,7 @@ if (success != True):
     print(tunnel.lastErrorText())
     sys.exit()
 
-#  Now that a background thread is running a SOCKS proxy server that forwards connections
+# Now that a background thread is running a SOCKS proxy server that forwards connections
 #  through an SSH tunnel, it is possible to use any Chilkat implemented protocol that is SOCKS capable,
 #  such as HTTP, POP3, SMTP, IMAP, FTP, etc.  The protocol may use SSL/TLS because the SSL/TLS
 #  will be passed through the SSH tunnel to the end-destination.  Also, any number of simultaneous
@@ -77,14 +77,14 @@ if (http.get_LastMethodSuccess() != True):
     print(http.lastErrorText())
     sys.exit()
 
-#  Stop the background listen/accept thread:
+# Stop the background listen/accept thread:
 waitForThreadExit = True
 success = tunnel.StopAccepting(waitForThreadExit)
 if (success != True):
     print(tunnel.lastErrorText())
     sys.exit()
 
-#  Close the SSH tunnel (would also kick any remaining connected clients).
+# Close the SSH tunnel (would also kick any remaining connected clients).
 success = tunnel.CloseTunnel(waitForThreadExit)
 if (success != True):
     print(tunnel.lastErrorText())
