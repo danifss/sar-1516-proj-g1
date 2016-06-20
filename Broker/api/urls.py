@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from api import views
 from rest_framework.generics import ListCreateAPIView, ListAPIView
 # from core.models import Service, Broker
-from serializers import ServiceSerializer, BrokerSerializer
+from serializers import ServiceSerializer
 
 
 urlpatterns = [

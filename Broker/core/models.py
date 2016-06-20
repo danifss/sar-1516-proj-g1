@@ -44,19 +44,19 @@ class Service(models.Model):
 
 
 ### BROKER (Others broker PSW on the network)
-class Broker(models.Model):
-    brokerID = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User)
-    name = models.CharField(max_length=50, unique=True)
-    ip = models.CharField(max_length=15, unique=True)
-    description = models.CharField(max_length=250, blank=True)
-    createdOn = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        return u'ID {0} - {1} - ({2}/{3}/{4})'.format(
-            self.brokerID,
-            self.name,
-            self.createdOn.day,
-            self.createdOn.month,
-            self.createdOn.year
-        )
+# class Broker(models.Model):
+#     brokerID = models.AutoField(primary_key=True)
+#     user = models.ForeignKey(User)
+#     name = models.CharField(max_length=50, unique=True)
+#     ip = models.CharField(max_length=15, unique=True)
+#     description = models.CharField(max_length=250, blank=True)
+#     createdOn = models.DateTimeField(auto_now_add=True)
+#
+#     def __unicode__(self):
+#         return u'ID {0} - {1} - ({2}/{3}/{4})'.format(
+#             self.brokerID,
+#             self.name,
+#             self.createdOn.day,
+#             self.createdOn.month,
+#             self.createdOn.year
+#         )
