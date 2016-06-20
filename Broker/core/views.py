@@ -419,15 +419,15 @@ def proxy(path=None, method='GET', data=None):
 
     except exceptions.Timeout:
         # 504 Gateway Timeout
-        response = Response({'detail': '504 Gateway Timeout'}, 504)
+        response = None
     except exceptions.ConnectionError:
         # 503 Service Unavailable
-        response = Response({'detail': '503 Service Unavailable'}, 503)
+        response = None
 
     if r is not None:
         if r.headers.get('Content-Type', None) == 'application/json':
-            response = Response(r.json(), r.status_code)
+            response = (r.json(), r.status_code)
         else:
-            response = Response(r.text, r.status_code)
+            response = (r.text, r.status_code)
     return response
 
