@@ -3,8 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
 # from django.views.decorators.csrf import csrf_protect
 
-from .models import User, Service, Broker
-from .forms import registerUserForm, loginForm, addBrokerForm
+from .models import User, Service
+from .forms import registerUserForm, loginForm
 
 import os
 from CryptoModule import *
@@ -13,6 +13,9 @@ from requests import exceptions
 
 
 host = 'http://localhost:9000/' # 10.1.1.2
+#user: admin
+#pass: 5e47dadc74cc43bdd896f95a34b2ae6a62e0e8d8202239b14f24df4828ffc30b
+#salt: nfz9XT2J/wwnl+EXe0iU6gQWDIDf6UsUqAnsSbwsNBg=
 
 
 def index(request):
@@ -192,6 +195,120 @@ def accountManage(request):
     return HttpResponse(template.render(context))
 
 
+# @csrf_protect
+# def brokers(request):
+#     if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
+#         request.session['firstName'] = "Visitante"
+#         request.session['loggedIn'] = False
+#         template = loader.get_template('core/index.html')
+#         return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
+#                                              'firstName': request.session['firstName']}))
+#
+#     action_link = 'core/action_handler.html'
+#     context = {
+#         'loggedIn': request.session['loggedIn'],
+#         'firstName': request.session['firstName'],
+#         'page_title': 'Brokers (PSWs)',
+#         'link_back': '/brokers',
+#     }
+#     try:
+#         brokers_list = Broker.objects.all()
+#         context.update({
+#             'brokers': brokers_list,
+#         })
+#     except Exception as e:
+#         print "Error getting Content.", e
+#         return HttpResponseRedirect('/')
+#
+#     if request.method == 'POST':
+#         form = addBrokerForm(request.POST)
+#         if form.is_valid():
+#             try:
+#                 user = User.objects.get(username=request.session['username'])
+#                 name = form.cleaned_data['name']
+#                 ip = form.cleaned_data['ip']
+#                 description = form.cleaned_data['description']
+#                 new_broker = Broker(user=user, name=name, ip=ip, description=description)
+#                 new_broker.save()
+#                 infoMessage = "You successfully added a new Broker!"
+#                 context.update({
+#                     'result': True,
+#                     'info_message': infoMessage,
+#                 })
+#                 # template = loader.get_template('core/broker_add.html')
+#                 return render(request, action_link, context)
+#             except:
+#                 infoMessage = "Something happened while adding the new Broker!"
+#                 msgError = "Error adding new Broker."
+#                 context.update({
+#                     'form': form,
+#                     'result': False,
+#                     'info_message': infoMessage,
+#                     'error_message': msgError,
+#                     'collapse': 'in',
+#                 })
+#         else:
+#             msgError = "Invalid Broker information!"
+#             context.update({
+#                 'brokers': brokers_list,
+#                 'form': form,
+#                 'result': False,
+#                 'error_message': msgError,
+#                 'loggedIn': request.session['loggedIn'],
+#                 'firstName': request.session['firstName'],
+#                 'collapse': 'in',
+#             })
+#     else:
+#         form = addBrokerForm()
+#         context.update({
+#             'form': form,
+#         })
+#
+#     # template = loader.get_template('core/brokers.html')
+#     # return HttpResponse(template.render(context))
+#     return render(request, 'core/brokers.html', context)
+
+
+# def broker_del(request, pk=None):
+#     if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
+#         request.session['firstName'] = "Visitante"
+#         request.session['loggedIn'] = False
+#         template = loader.get_template('core/index.html')
+#         return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
+#                                              'firstName': request.session['firstName']}))
+#
+#     action_link = 'core/action_handler.html'
+#     context = {
+#         'loggedIn': request.session['loggedIn'],
+#         'firstName': request.session['firstName'],
+#         'page_title': 'Brokers (PSWs)',
+#         'link_back': '/brokers',
+#     }
+#     if pk is not None:
+#         try:
+#             id = int(pk)
+#             broker = Broker.objects.get(brokerID=id)
+#             broker.delete()
+#             infoMessage = "You successfully deleted the Broker!"
+#             context.update({
+#                 'result': True,
+#                 'info_message': infoMessage,
+#             })
+#         except:
+#             infoMessage = "Something happened while deleting the Broker!"
+#             msgError = "Invalid Broker!"
+#             context.update({
+#                 'result': False,
+#                 'info_message': infoMessage,
+#                 'error_message': msgError,
+#             })
+#     else:
+#         return HttpResponseRedirect('/')
+#
+#     template = loader.get_template(action_link)
+#     return HttpResponse(template.render(context))
+
+
 def services(request):
     if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
         request.session['firstName'] = "Visitante"
@@ -220,120 +337,6 @@ def services(request):
     return HttpResponse(template.render(context))
 
 
-# @csrf_protect
-def brokers(request):
-    if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
-        request.session['firstName'] = "Visitante"
-        request.session['loggedIn'] = False
-        template = loader.get_template('core/index.html')
-        return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
-                                             'firstName': request.session['firstName']}))
-
-    action_link = 'core/action_handler.html'
-    context = {
-        'loggedIn': request.session['loggedIn'],
-        'firstName': request.session['firstName'],
-        'page_title': 'Brokers (PSWs)',
-        'link_back': '/brokers',
-    }
-    try:
-        brokers_list = Broker.objects.all()
-        context.update({
-            'brokers': brokers_list,
-        })
-    except Exception as e:
-        print "Error getting Content.", e
-        return HttpResponseRedirect('/')
-
-    if request.method == 'POST':
-        form = addBrokerForm(request.POST)
-        if form.is_valid():
-            try:
-                user = User.objects.get(username=request.session['username'])
-                name = form.cleaned_data['name']
-                ip = form.cleaned_data['ip']
-                description = form.cleaned_data['description']
-                new_broker = Broker(user=user, name=name, ip=ip, description=description)
-                new_broker.save()
-                infoMessage = "You successfully added a new Broker!"
-                context.update({
-                    'result': True,
-                    'info_message': infoMessage,
-                })
-                # template = loader.get_template('core/broker_add.html')
-                return render(request, action_link, context)
-            except:
-                infoMessage = "Something happened while adding the new Broker!"
-                msgError = "Error adding new Broker."
-                context.update({
-                    'form': form,
-                    'result': False,
-                    'info_message': infoMessage,
-                    'error_message': msgError,
-                    'collapse': 'in',
-                })
-        else:
-            msgError = "Invalid Broker information!"
-            context.update({
-                'brokers': brokers_list,
-                'form': form,
-                'result': False,
-                'error_message': msgError,
-                'loggedIn': request.session['loggedIn'],
-                'firstName': request.session['firstName'],
-                'collapse': 'in',
-            })
-    else:
-        form = addBrokerForm()
-        context.update({
-            'form': form,
-        })
-
-    # template = loader.get_template('core/brokers.html')
-    # return HttpResponse(template.render(context))
-    return render(request, 'core/brokers.html', context)
-
-
-def broker_del(request, pk=None):
-    if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
-        request.session['firstName'] = "Visitante"
-        request.session['loggedIn'] = False
-        template = loader.get_template('core/index.html')
-        return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
-                                             'firstName': request.session['firstName']}))
-
-    action_link = 'core/action_handler.html'
-    context = {
-        'loggedIn': request.session['loggedIn'],
-        'firstName': request.session['firstName'],
-        'page_title': 'Brokers (PSWs)',
-        'link_back': '/brokers',
-    }
-    if pk is not None:
-        try:
-            id = int(pk)
-            broker = Broker.objects.get(brokerID=id)
-            broker.delete()
-            infoMessage = "You successfully deleted the Broker!"
-            context.update({
-                'result': True,
-                'info_message': infoMessage,
-            })
-        except:
-            infoMessage = "Something happened while deleting the Broker!"
-            msgError = "Invalid Broker!"
-            context.update({
-                'result': False,
-                'info_message': infoMessage,
-                'error_message': msgError,
-            })
-    else:
-        return HttpResponseRedirect('/')
-
-    template = loader.get_template(action_link)
-    return HttpResponse(template.render(context))
-
-
 def service_del(request, pk=None):
     if 'loggedIn' not in request.session or request.session['loggedIn'] == False or 'username' not in request.session:
         request.session['firstName'] = "Visitante"
@@ -352,13 +355,17 @@ def service_del(request, pk=None):
     if pk is not None:
         try:
             id = int(pk)
-            service = Service.objects.get(serviceID=id)
-            service.delete()
-            infoMessage = "You successfully deleted the Service!"
-            context.update({
-                'result': True,
-                'info_message': infoMessage,
-            })
+            url = host + 'api/services/' + str(id) + '/'
+            result, status = proxy(path=url, method='GET')
+            if status == 200:
+                url = host + 'api/services/del/' + str(id) + '/'
+                result, status = proxy(path=url, method='DELETE')
+                if status == 200:
+                    infoMessage = "You successfully deleted the Service!"
+                    context.update({
+                        'result': True,
+                        'info_message': infoMessage,
+                    })
         except:
             infoMessage = "Something happened while deleting the Service!"
             msgError = "Invalid Service!"
@@ -388,8 +395,12 @@ def services_update(request):
         'firstName': request.session['firstName'],
     }
     try:
-        #TODO connect to all existent brokers to ask for their services and then save them
-        services = Service.objects.all()
+        services = None
+        url = host + 'api/services/'
+        result, status = proxy(path=url, method='GET')
+        if status == 200:
+            services = result['results']
+
         context.update({
             'services': services,
         })
