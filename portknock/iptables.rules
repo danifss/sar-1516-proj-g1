@@ -10,7 +10,7 @@
 -A INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -i lo -j ACCEPT
--A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 8000 -j ACCEPT
 -A INPUT -j KNOCKING
 
 -A GATE1 -p tcp --dport 1111 -m recent --set --name AUTH1 --mask 255.255.255.255 --rsource -j DROP
