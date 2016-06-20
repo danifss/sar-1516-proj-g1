@@ -12,7 +12,7 @@ import requests
 from requests import exceptions
 
 
-host = 'http://10.1.1.2:9000/'
+host = 'http://localhost:9000/' # 10.1.1.2
 
 
 def index(request):
@@ -203,9 +203,9 @@ def services(request):
         # services = Service.objects.all()
         services = None
         url = host + 'api/services/'
-        result = proxy(path=url, method='GET')
-        if result.status_code == 200:
-            services = result.data
+        result, status = proxy(path=url, method='GET')
+        if status == 200:
+            services = result['results']
 
         context = {
             'services': services,
