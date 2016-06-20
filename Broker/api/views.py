@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import requests
 from requests import exceptions
-import json
+
 
 # Returns a list of available services in the networks
 # class ServicesList(APIView):

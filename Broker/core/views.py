@@ -8,6 +8,11 @@ from .forms import registerUserForm, loginForm, addBrokerForm
 
 import os
 from CryptoModule import *
+import requests
+from requests import exceptions
+
+
+host = 'http://10.1.1.2:9000/'
 
 
 def index(request):
@@ -195,7 +200,13 @@ def services(request):
         return HttpResponse(template.render({'loggedIn': request.session['loggedIn'],
                                              'firstName': request.session['firstName']}))
     try:
-        services = Service.objects.all()
+        # services = Service.objects.all()
+        services = None
+        url = host + 'api/services/'
+        result = proxy(path=url, method='GET')
+        if result.status_code == 200:
+            services = result.data
+
         context = {
             'services': services,
             'loggedIn': request.session['loggedIn'],
@@ -388,3 +399,35 @@ def services_update(request):
 
     template = loader.get_template(action_link)
     return HttpResponse(template.render(context))
+
+
+def proxy(path=None, method='GET', data=None):
+    timeout = 60 * 5
+
+    r = None
+    # 501 Not Implemented
+    response = None
+    try:
+        if method == 'GET':
+            r = requests.get(path, data=data, timeout=timeout)
+        elif method == 'POST':
+            r = requests.post(path, data=data, timeout=timeout)
+        elif method == 'PUT':
+            r = requests.put(path, data=data, timeout=timeout)
+        elif method == 'DELETE':
+            r = requests.delete(path, data=data, timeout=timeout)
+
+    except exceptions.Timeout:
+        # 504 Gateway Timeout
+        response = Response({'detail': '504 Gateway Timeout'}, 504)
+    except exceptions.ConnectionError:
+        # 503 Service Unavailable
+        response = Response({'detail': '503 Service Unavailable'}, 503)
+
+    if r is not None:
+        if r.headers.get('Content-Type', None) == 'application/json':
+            response = Response(r.json(), r.status_code)
+        else:
+            response = Response(r.text, r.status_code)
+    return response
+
