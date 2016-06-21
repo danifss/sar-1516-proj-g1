@@ -12,7 +12,7 @@ if (success != True):
 # This example requires Chilkat version 9.5.0.50 or greater.
 tunnel = chilkat.CkSshTunnel()
 
-sshHostname = "192.168.56.101"
+sshHostname = "192.168.46.5"
 sshPort = 22
 
 #  Connect to an SSH server and establish the SSH tunnel:

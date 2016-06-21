@@ -13,3 +13,4 @@ PySocks==1.5.7
 PyYAML==3.11
 requests==2.10.0
 six==1.10.0
+sshtunnel==0.0.8.2

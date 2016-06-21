@@ -4,6 +4,7 @@ import socket
 import paramiko
 import socks
 from ForwardServer import ForwardServer, Handler
+import time
 
 try:
     import SocketServer
@@ -13,8 +14,8 @@ except ImportError:
 # SSH_SERVER_HOST = '192.168.35.151'
 SSH_SERVER_HOST = '10.0.0.1'
 SSH_SERVER_PORT = 22
-USERNAME = 'nuno'
-PASSWORD = 'nuno'
+USERNAME = 'silva'
+PASSWORD = 'a'
 SOCKS_HOST = 'localhost'
 SOCKS_PORT = 1080
 
@@ -51,6 +52,8 @@ def main():
     try:
         # t.connect(None, username='nuno', password='nuno')
         client.connect(hostname=SSH_SERVER_HOST, port=SSH_SERVER_PORT, username=USERNAME, password=PASSWORD)
+        transport = client.get_transport()
+        forward_tunnel(5, SSH_SERVER_HOST, 80, transport)
     except Exception as e:
         print('*** Failed to connect to %s:%d: %r' % (SSH_SERVER_HOST, SSH_SERVER_PORT, e))
         sys.exit(1)
@@ -58,8 +61,8 @@ def main():
     verbose('Now forwarding port %d to %s:%d ...' % (5, SSH_SERVER_HOST, 80))
 
     try:
-        while (True):
-            print
+        while True:
+            time.sleep(1)
     except KeyboardInterrupt:
         print('C-c: Port forwarding stopped.')
         sys.exit(0)
