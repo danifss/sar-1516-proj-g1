@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^services/$', ListCreateAPIView.as_view(queryset=Service.objects.all(), serializer_class=ServiceSerializer),
         name='services-list'),
 
+    url(r'^services/(?P<pk>[0-9]+)/$', views.sericeById.as_view(), name='service-get'),
+
     # ex: api/services/1/
     # url(r'^services/del/(?P<pk>[0-9]+)/$', DestroyAPIView.as_view(queryset=Service.objects.all(),
     #                                                               serializer_class=ServiceSerializer),

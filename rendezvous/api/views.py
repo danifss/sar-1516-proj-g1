@@ -8,6 +8,51 @@ from rest_framework import status
 from rest_framework.views import APIView
 
 
+class sericeById(APIView):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
+    allowed_methods = ['get']
+
+    def get(self, request, pk=None):
+        """
+        Gets Service by given id
+
+
+
+
+        <b>Details</b>
+
+        METHODS : GET
+
+
+
+        <b>RETURNS:</b>
+
+        - 200 OK
+
+        - 404 NOT FOUND
+
+        ---
+        omit_parameters:
+        - form
+        """
+        try:
+            int_pk = int(pk)
+            result = Service.objects.get(serviceID=int_pk)
+            data = {
+                "serviceID": result.serviceID,
+                "name": result.name,
+                "description": result.description,
+                "ip": result.ip,
+                "port": result.port,
+                "createdOn": result.createdOn,
+            }
+            return Response(status=status.HTTP_200_OK, data=data)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND, data={"detail": "Service not found."})
+
+
+
 class delServiceByIpPort(APIView):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
