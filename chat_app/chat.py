@@ -5,7 +5,7 @@ from time import sleep
 import public_ip
 import os
 import requests
-
+import SshClient
 
 BROKER_HOST = "http://192.168.1.1:8000"
 
@@ -71,8 +71,9 @@ class receiver (threading.Thread):
         os._exit(0)
 
 
-def register_service(ip, port):
+def register_service(nickname, ip, port):
     data = {
+        "nickname": nickname,
         "ip": str(ip),
         "name": "chat_app_" + str(port),
         "description": "Chat end-to-end app using sockets without encryption",
@@ -90,6 +91,12 @@ def delete_service(ip, port):
     URL_delete = BROKER_HOST + '/api/services/del/' + str(ip) + '/' + str(port) + '/'
     r = requests.delete(URL_delete)
 
+def get_service(ip, port):
+    URL_get = BROKER_HOST + '/api/services/' #TODO: Link of get
+    r = requests.get(URL_get)
+    json=r.json()
+    return json["ip"], json["port"]
+
 
 try:
     BUFFER_SIZE = 20
@@ -97,12 +104,16 @@ try:
     thread_receiver.start()
     sleep(0.1)   
 
-    register_service(public_ip.get_lan_ip(), thread_receiver.get_port())
+    nickname=raw_input("Insert your nickname: ")
+    register_service(nickname, public_ip.get_lan_ip(), thread_receiver.get_port())
 
-    ip = raw_input("Connect to\nIP: ")
-    port = int(raw_input("Port: "))
-    thread_sender = sender(ip, port)
+    nickname=raw_input("Insert nickname to chat with: ")
+    (ip, port)=get_service(nickname)
+    #ip = raw_input("Connect to\nIP: ")
+    #port = int(raw_input("Port: "))
+    thread_sender = sender(nickname)
     thread_sender.start()
+    SshClient.tunnel(thread_receiver.get_port(), port)
     
     while True: sleep(100)
 except KeyboardInterrupt:
