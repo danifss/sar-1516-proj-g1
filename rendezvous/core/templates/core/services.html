@@ -15,6 +15,7 @@
         <thead>
             <tr>
                 <th>#</th>
+                <th>Nickname</th>
                 <th>Name</th>
                 <th>Description</th>
                 <th>Added at</th>
@@ -26,6 +27,9 @@
             <tr>
                 <td>
                     {{ forloop.counter }}
+                </td>
+                <td>
+                    {{ s.nickname }}
                 </td>
                 <td>
                     {{ s.name }}

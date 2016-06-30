@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import User, Service
+from core.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -7,9 +7,9 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
 
 
-class ServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Service
+# class ServiceSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Service
 
 
 # class BrokerSerializer(serializers.ModelSerializer):

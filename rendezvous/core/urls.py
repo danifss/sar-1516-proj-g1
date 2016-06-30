@@ -17,7 +17,7 @@ urlpatterns = [
     # ex: /services/update/
     # url(r'^services/update/$', views.services_update, name='services'),
     # ex: /services/del/1
-    # url(r'^services/del/(?P<pk>[0-9]+)/$', views.service_del, name='deleteService'),
+    url(r'^services/del/(?P<pk>[0-9]+)/$', views.service_del, name='deleteService'),
 
     # ex: /brokers/
     # url(r'^brokers/$', views.brokers, name='brokers'),

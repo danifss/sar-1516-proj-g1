@@ -25,22 +25,23 @@ class User(models.Model):
 
 
 ### SERVICE (Available services in this network)
-class Service(models.Model):
-    serviceID = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=200, unique=True)
-    description = models.CharField(max_length=250, blank=True)
-    ip = models.CharField(max_length=15)
-    port = models.IntegerField(unique=True)
-    createdOn = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        return u'ID {0} - {1} - ({2}/{3}/{4})'.format(
-            self.serviceID,
-            self.name,
-            self.createdOn.day,
-            self.createdOn.month,
-            self.createdOn.year
-        )
+# class Service(models.Model):
+#     serviceID = models.AutoField(primary_key=True)
+#     name = models.CharField(max_length=200, unique=True)
+#     nickname = models.CharField(max_length=50, unique=True)
+#     description = models.CharField(max_length=250, blank=True)
+#     ip = models.CharField(max_length=15)
+#     port = models.IntegerField(unique=True)
+#     createdOn = models.DateTimeField(auto_now_add=True)
+#
+#     def __unicode__(self):
+#         return u'ID {0} - {1} - ({2}/{3}/{4})'.format(
+#             self.serviceID,
+#             self.name,
+#             self.createdOn.day,
+#             self.createdOn.month,
+#             self.createdOn.year
+#         )
 
 
 ### BROKER (Others broker PSW on the network)

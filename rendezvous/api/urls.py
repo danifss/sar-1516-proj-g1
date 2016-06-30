@@ -12,16 +12,14 @@ urlpatterns = [
     url(r'^services/$', ListCreateAPIView.as_view(queryset=Service.objects.all(), serializer_class=ServiceSerializer),
         name='services-list'),
 
-    url(r'^services/(?P<pk>[0-9]+)/$', views.sericeById.as_view(), name='service-get'),
+    # ex: api/services/daniel/
+    url(r'^services/(?P<nickname>[a-zA-z0-9]+)/$', views.ServiceByNickname.as_view(), name='service-nickname'),
 
-    # ex: api/services/1/
-    # url(r'^services/del/(?P<pk>[0-9]+)/$', DestroyAPIView.as_view(queryset=Service.objects.all(),
-    #                                                               serializer_class=ServiceSerializer),
-    #     name='services-del'),
-    url(r'^services/del/(?P<pk>[0-9]+)/$', views.delServiceById.as_view(), name='services-del'),
+    # ex: api/services/id/1/
+    url(r'^services/id/(?P<pk>[0-9]+)/$', views.ServiceById.as_view(), name='service-get-del'),
 
     # ex: api/services/10.0.0.20/22/
-    url(r'^services/del/(?P<ip>\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})/(?P<port>\d+)/$', views.delServiceByIpPort.as_view(),
-        name='services-del'),
+    url(r'^services/(?P<ip>\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})/(?P<port>\d+)/$', views.ServiceByIpPort.as_view(),
+        name='services-ip-port'),
 
 ]

@@ -7,10 +7,12 @@ import os
 import requests
 import SshClient
 
-BROKER_HOST = "http://192.168.1.1:8000"
+BROKER_HOST = "http://localhost:8000"
+# BROKER_HOST = "http://192.168.1.1:8000"
+# BROKER_HOST = "http://192.168.2.1:8000"
 
 
-class sender (threading.Thread):
+class sender(threading.Thread):
     def __init__(self, host, port):
         threading.Thread.__init__(self)
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,14 +33,11 @@ class sender (threading.Thread):
         return str(self.s.getsockname()[1])
 
     def stop(self):
-        URL_delete = BROKER_HOST + '/api/services/del/' + str(public_ip.get_lan_ip()) + "/" + str(self.s.getsockname()[1]) + '/'
-        r = requests.delete(URL_delete)
         self.toRun = False
         os._exit(0)
 
 
-
-class receiver (threading.Thread):
+class receiver(threading.Thread):
     def __init__(self, BUFFER_SIZE):
         threading.Thread.__init__(self)
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -65,8 +64,9 @@ class receiver (threading.Thread):
         return str(self.s.getsockname()[1])
 
     def stop(self):
-        URL_delete = BROKER_HOST + '/api/services/del/' + str(public_ip.get_lan_ip()) + '/' + str(self.s.getsockname()[1]) + '/'
-        r = requests.delete(URL_delete)
+        # URL_delete = BROKER_HOST + '/api/services/del/' + str(public_ip.get_lan_ip()) + '/' + str(
+        #     self.s.getsockname()[1]) + '/'
+        # r = requests.delete(URL_delete)
         self.toRun = False
         os._exit(0)
 
@@ -77,45 +77,70 @@ def register_service(nickname, ip, port):
         "ip": str(ip),
         "name": "chat_app_" + str(port),
         "description": "Chat end-to-end app using sockets without encryption",
-        "port": str(port)
+        "port": port
     }
 
     try:
-        r = requests.post(BROKER_HOST + '/api/services/', data=data)
+        res = requests.post(BROKER_HOST + '/api/services/', data=data)
+        return res
     except:
         print "Error while registering service"
-        sys.exit(1)
+        os._exit(1)
 
 
 def delete_service(ip, port):
     URL_delete = BROKER_HOST + '/api/services/del/' + str(ip) + '/' + str(port) + '/'
     r = requests.delete(URL_delete)
+    # if 'ip' in json and 'port' in json:
 
-def get_service(ip, port):
-    URL_get = BROKER_HOST + '/api/services/' #TODO: Link of get
+
+def get_service(nickname):
+    URL_get = BROKER_HOST + '/api/services/' + str(nickname) + '/'
     r = requests.get(URL_get)
-    json=r.json()
-    return json["ip"], json["port"]
+    json = r.json()
+    if r.status_code == 200:
+        return json['ip'], json['port']
+    return r.status_code, r.json()
 
 
 try:
     BUFFER_SIZE = 20
     thread_receiver = receiver(BUFFER_SIZE)
     thread_receiver.start()
-    sleep(0.1)   
+    sleep(0.1)
 
-    nickname=raw_input("Insert your nickname: ")
-    register_service(nickname, public_ip.get_lan_ip(), thread_receiver.get_port())
+    nickname = raw_input('Insert your nickname: ')
+    res = register_service(nickname, public_ip.get_lan_ip(), thread_receiver.get_port())
 
-    nickname=raw_input("Insert nickname to chat with: ")
-    (ip, port)=get_service(nickname)
-    #ip = raw_input("Connect to\nIP: ")
-    #port = int(raw_input("Port: "))
-    thread_sender = sender(nickname)
-    thread_sender.start()
-    SshClient.tunnel(thread_receiver.get_port(), port)
-    
-    while True: sleep(100)
+    if res.status_code != 200:
+        print "Error registering the service."
+        result = res.json()
+        for key, value in result.iteritems():
+            print '\t' + key + ': ' + value[0]
+        os._exit(0)
+
+    nickname = raw_input('Insert nickname to chat with: ')
+    status, result = get_service(nickname)
+    if status == 200:
+        # ip = raw_input("Connect to\nIP: ")
+        # port = int(raw_input("Port: "))
+        ip, port = result['ip'], result['port']
+        thread_sender = sender(ip, port)
+        thread_sender.start()
+        SshClient.tunnel(thread_receiver.get_port(), port)
+
+        while True:
+            sleep(100)
+    else:
+        print "Error getting the other service."
+        for key, value in result.iteritems():
+            print '\t' + key + ': ' + value
+
+    print "Exiting..."
+    delete_service(public_ip.get_lan_ip(), thread_receiver.get_port())
+    thread_receiver.stop()
+    os._exit(0)
+
 except KeyboardInterrupt:
     print "\nStoping"
     delete_service(public_ip.get_lan_ip(), thread_receiver.get_port())

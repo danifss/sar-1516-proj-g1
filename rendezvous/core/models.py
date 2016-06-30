@@ -28,6 +28,7 @@ class User(models.Model):
 class Service(models.Model):
     serviceID = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200, unique=True)
+    nickname = models.CharField(max_length=50, unique=True)
     description = models.CharField(max_length=250, blank=True)
     ip = models.CharField(max_length=15, unique=True)
     port = models.IntegerField()

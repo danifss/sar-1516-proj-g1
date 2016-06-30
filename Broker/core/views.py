@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
 # from django.views.decorators.csrf import csrf_protect
 
-from .models import User, Service
+from .models import User
 from .forms import registerUserForm, loginForm
 
 import os
@@ -355,10 +355,10 @@ def service_del(request, pk=None):
     if pk is not None:
         try:
             id = int(pk)
-            url = host + 'api/services/' + str(id) + '/'
+            url = host + 'api/services/id/' + str(id) + '/'
             result, status = proxy(path=url, method='GET')
             if status == 200:
-                url = host + 'api/services/del/' + str(id) + '/'
+                url = host + 'api/services/id/' + str(id) + '/'
                 result, status = proxy(path=url, method='DELETE')
                 if status == 200:
                     infoMessage = "You successfully deleted the Service!"

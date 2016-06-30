@@ -53,6 +53,7 @@ from requests import exceptions
 #         return Response(status=status.HTTP_200_OK, data={'data': str(self.queryset)})
 
 host = 'http://localhost:9000/'
+# host = 'http://10.1.1.2:9000/'
 
 
 class listCreateService(APIView):
@@ -114,6 +115,7 @@ class listCreateService(APIView):
 
 
         {
+            "nickname": "daniel",
 
             "name": "Chat em silva-pc",
 
@@ -121,7 +123,7 @@ class listCreateService(APIView):
 
             "ip": "10.0.0.10",
 
-            "port": "12345"
+            "port": 12345
 
         }
 
@@ -148,13 +150,49 @@ class listCreateService(APIView):
 
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Bad request."})
-        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data=result.data) # {"detail": "Internal Server Error."}
+        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data=result.data)
 
 
-class delServiceByIpPort(APIView):
+class ServiceByIpPort(APIView):
     # queryset = Service.objects.all()
     # serializer_class = ServiceSerializer
-    allowed_methods = ['delete']
+    allowed_methods = ['get', 'delete']
+
+    def get(self, request, ip=None, port=None):
+        """
+            Gets Service by given IP and Port
+
+
+
+
+            <b>Details</b>
+
+            METHODS : GET
+
+
+
+            <b>RETURNS:</b>
+
+            - 200 OK
+
+            - 400 BAD REQUEST
+
+            - 404 NOT FOUND
+
+            ---
+            omit_parameters:
+            - form
+        """
+        try:
+            if ip is not None and port is not None:
+                url = host + 'api/services/' + str(ip) + '/' + str(port) + '/'
+                result = proxy(path=url, method='GET')
+                if result.status_code == 200:
+                    return Response(status=status.HTTP_200_OK, data=result.data)
+
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Bad request."})
+        return Response(status=status.HTTP_404_NOT_FOUND, data={"detail": "Service not found."})
 
     def delete(self, request, ip=None, port=None):  # ip1=None, ip2=None, ip3=None, ip4=None, port=None):
         """
@@ -181,20 +219,60 @@ class delServiceByIpPort(APIView):
 
         try:
             if ip is not None and port is not None:
-                url = host + 'api/services/del/' + str(ip) + '/' + str(port) + '/'
+                url = host + 'api/services/' + str(ip) + '/' + str(port) + '/'
                 result = proxy(path=url, method='DELETE')
                 if result.status_code == 200:
                     return Response(status=status.HTTP_200_OK, data={"detail": "Service deleted with success."})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Bad request."})
-
         return Response(status=status.HTTP_404_NOT_FOUND, data={"detail": "Service not found."})
 
 
-class delServiceById(APIView):
+class ServiceById(APIView):
     # queryset = Service.objects.all()
     # serializer_class = ServiceSerializer
-    allowed_methods = ['delete']
+    allowed_methods = ['get', 'delete']
+
+    def get(self, request, pk=None):
+        """
+            Gets Service by given ID
+
+
+
+
+            <b>Details</b>
+
+            METHODS : GET
+
+
+
+            <b>RETURNS:</b>
+
+            - 200 OK
+
+            - 400 BAD REQUEST
+
+            - 404 NOT FOUND
+
+            ---
+            omit_parameters:
+            - form
+        """
+
+        try:
+            id = int(pk)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Bad request."})
+
+        try:
+            url = host + 'api/services/id/' + str(id) + '/'
+            result = proxy(path=url, method='GET')
+            if result.status_code == 200:
+                return Response(status=status.HTTP_200_OK, data=result.data)
+            elif result.status_code >= 400:
+                return Response(status=status.HTTP_404_NOT_FOUND, data={"detail": "Service not found."})
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Bad request."})
 
     def delete(self, request, pk=None):
         """
@@ -225,15 +303,55 @@ class delServiceById(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Bad request."})
 
         try:
-            url = host + 'api/services/del/' + str(id) + '/'
+            url = host + 'api/services/id/' + str(id) + '/'
             result = proxy(path=url, method='DELETE')
             if result.status_code == 200:
                 return Response(status=status.HTTP_200_OK, data=result.data)
-            else:
-                return Response(status=status.HTTP_404_NOT_FOUND, data={"detail": "Service not found."})
+            elif result.status_code >= 400:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Bad request."})
 
         except:
             return Response(status=status.HTTP_404_NOT_FOUND, data={"detail": "Service not found."})
+
+
+class ServiceByNickname(APIView):
+    allowed_methods = ['get']
+
+    def get(self, request, nickname=None):
+        """
+            Gets Service by given nickname
+
+
+
+
+            <b>Details</b>
+
+            METHODS : GET
+
+
+
+            <b>RETURNS:</b>
+
+            - 200 OK
+
+            - 400 BAD REQUEST
+
+            - 404 NOT FOUND
+
+            ---
+            omit_parameters:
+            - form
+        """
+        try:
+            if nickname is not None:
+                url = host + 'api/services/' + str(nickname) + '/'
+                result = proxy(path=url, method='GET')
+                if result.status_code == 200:
+                    return Response(status=status.HTTP_200_OK, data=result.data)
+                elif result.status_code >= 400:
+                    return Response(status=status.HTTP_404_NOT_FOUND, data={"detail": "Service not found."})
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Bad request."})
 
 
 def proxy(path=None, method='GET', data=None):
