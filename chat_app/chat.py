@@ -89,7 +89,7 @@ def register_service(nickname, ip, port):
 
 
 def delete_service(ip, port):
-    URL_delete = BROKER_HOST + '/api/services/del/' + str(ip) + '/' + str(port) + '/'
+    URL_delete = BROKER_HOST + '/api/services/' + str(ip) + '/' + str(port) + '/'
     r = requests.delete(URL_delete)
     # if 'ip' in json and 'port' in json:
 
@@ -133,8 +133,11 @@ try:
             sleep(100)
     else:
         print "Error getting the other service."
-        for key, value in result.iteritems():
-            print '\t' + key + ': ' + value
+        try:
+            for key, value in result.iteritems():
+                print '\t' + key + ': ' + value
+        except:
+            print result
 
     print "Exiting..."
     delete_service(public_ip.get_lan_ip(), thread_receiver.get_port())
@@ -147,3 +150,9 @@ except KeyboardInterrupt:
     thread_receiver.stop()
     thread_sender.stop()
     os._exit(0)
+except Exception:
+    print "\nError!!"
+    delete_service(public_ip.get_lan_ip(), thread_receiver.get_port())
+    thread_receiver.stop()
+    thread_sender.stop()
+    os._exit(1)
