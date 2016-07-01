@@ -91,7 +91,6 @@ def register_service(nickname, ip, port):
 def delete_service(ip, port):
     URL_delete = BROKER_HOST + '/api/services/' + str(ip) + '/' + str(port) + '/'
     r = requests.delete(URL_delete)
-    # if 'ip' in json and 'port' in json:
 
 
 def get_service(nickname):
@@ -100,7 +99,7 @@ def get_service(nickname):
     json = r.json()
     if r.status_code == 200:
         return json['ip'], json['port']
-    return r.status_code, r.json()
+    return r.status_code, json
 
 
 try:
